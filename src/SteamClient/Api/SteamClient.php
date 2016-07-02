@@ -4,6 +4,7 @@ namespace SteamClient\Api;
 
 use SteamClient\Config\Config;
 use SteamClient\Exception\ClientException;
+use SteamClient\Exception\ConfigException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Query;
 use GuzzleHttp\Exception\ClientException as GuzzleClientException;
@@ -29,6 +30,24 @@ class SteamClient
     /** @var Client HTTP client */
     private $client;
 
+    // HTTP methods
+    const HTTP_DELETE = 'DELETE';
+    const HTTP_GET    = 'GET';
+    const HTTP_HEAD   = 'HEAD';
+    const HTTP_PATCH  = 'PATCH';
+    const HTTP_POST   = 'POST';
+    const HTTP_PUT    = 'PUT';
+
+    // Allowed HTTP methods
+    private $allowedHttpMethods = [
+        self::HTTP_DELETE,
+        self::HTTP_GET,
+        self::HTTP_HEAD,
+        self::HTTP_PATCH,
+        self::HTTP_POST,
+        self::HTTP_PUT,
+    ];
+
     function __construct(Config $config)
     {
         $this->apiKey = $config->getApiKey();
@@ -37,6 +56,40 @@ class SteamClient
             'base_url' => $config->getSteamApiUrl(),
         ]);
         $this->responseType = $config->getResponseType();
+    }
+
+    /**
+     * Sets the value of method
+     * @param string $method the method
+     * @return self
+     */
+    public function setMethod($method)
+    {
+        if (in_array($method, $this->allowedHttpMethods)) {
+            $this->method = $method;
+        } else {
+            throw new ConfigException(
+                'Invalid HTTP method : %s',
+                $method
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of endpoint
+     * @param string $endpoint the endpoint
+     * @return self
+     */
+    public function setEndpoint($endpoint)
+    {
+        if (strpos($endpoint, '/') !== 0) {
+            $endpoint = '/'.$endpoint;
+        }
+        $this->endpoint = $endpoint;
+
+        return $this;
     }
 
     /**
@@ -97,6 +150,24 @@ class SteamClient
         if ($includeApiKey) {
             $this->addParameter('key', $this->apiKey);
         }
+
+        return $this->request();
+    }
+
+    /**
+     * Performs a raw API call - can be used for non-implemented endpoints
+     * @param  string $method     HTTP method
+     * @param  string $endpoint   Endpoint
+     * @param  array  $parameters Array of query parameters
+     * @return array              Call result
+     */
+    public function call($method, $endpoint, $parameters)
+    {
+        $this->setMethod($method);
+        $this->setEndpoint($endpoint);
+        $this->cleanParameters();
+        $this->addParameters($parameters);
+
         return $this->request();
     }
 

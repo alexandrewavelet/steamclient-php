@@ -4,7 +4,7 @@ namespace SteamClient\Api;
 
 use SteamClient\Config\Config;
 
-class SteamAPIHandler
+class SteamAPIWrapper
 {
     /** @var SteamClient Client for Steam API */
     private $steamClient;

@@ -2,6 +2,8 @@
 
 namespace SteamClient\Config;
 
+use SteamClient\Exception\ConfigException;
+
 class Config
 {
     /** @var string Steam API key */
@@ -13,13 +15,16 @@ class Config
     /** @var string Base API URL */
     protected $steamApiUrl;
 
+    /** Response formats */
+    const FORMAT_JSON = 'json';
+    const FORMAT_XML  = 'xml';
+    const FORMAT_VDF  = 'vdf';
+
     /** @var array Available response formats */
-    private $availableResponseType = [
-        'json',
+    private $allowedResponsesType = [
+        self::FORMAT_JSON,
     ];
 
-    /** Const for JSON format */
-    const TYPE_JSON = 'json';
 
     function __construct($apiKey, $responseType = 'json')
     {
@@ -65,7 +70,7 @@ class Config
      */
     protected function setResponseType($responseType)
     {
-        if (in_array($responseType, $this->availableResponseType)) {
+        if (in_array($responseType, $this->allowedResponsesType)) {
             $this->responseType = $responseType;
         } else {
             throw new ConfigException(
