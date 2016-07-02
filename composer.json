@@ -2,6 +2,11 @@
     "name": "alexandrewavelet/steamclient-php",
     "version": "0.0.1",
     "require": {
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "^5.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "SteamClient": "src"
+        }
     }
 }

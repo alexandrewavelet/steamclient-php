@@ -1,10 +1,6 @@
-# Steam API PHP
+<?php
 
-WIP
-
-## How to use
-
-```php
+use SteamClient\Utils;
 use SteamClient\Api\SteamAPIHandler;
 use SteamClient\Config\Config;
 
@@ -14,5 +10,4 @@ $steamConfig = new Config('steamapikey');
 $steamAPIHandler = new SteamApiHandler($steamConfig);
 $availableEndpoints = $steamAPIHandler->getSupportedAPIList();
 
-print_r($availableEndpoints);
-```
+Utils::recursiveDump($availableEndpoints);
